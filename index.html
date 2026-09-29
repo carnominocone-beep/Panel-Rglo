@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REGLO FF Menu</title>
+<style>
+:root{--bg:#07090d;--panel:#0e1219;--line:#1c2430;--tx:#e6edf5;--mut:#7c8a9c;--ac:#ff3b3b;--ok:#37e08a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Rajdhani","Segoe UI",Roboto,sans-serif;min-height:100vh;background-image:radial-gradient(circle at 50% -10%,#2a0d10 0,transparent 55%)}
+.screen{display:none;min-height:100vh;padding:24px 18px;align-items:center;justify-content:center;flex-direction:column}
+.screen.on{display:flex}
+.card{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:26px 22px}
+h1{margin:0 0 4px;font-size:30px;letter-spacing:3px;font-weight:700}
+h1 b{color:var(--ac)}
+.beta{display:inline-block;font-size:11px;letter-spacing:2px;border:1px solid var(--ac);color:var(--ac);padding:1px 6px;border-radius:3px;vertical-align:middle;margin-left:6px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 20px}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px}
+input{width:100%;background:#090c11;border:1px solid var(--line);color:var(--tx);padding:12px;font:inherit;font-size:16px;border-radius:4px;outline:none}
+input:focus{border-color:var(--ac)}
+button.main{width:100%;margin-top:20px;background:var(--ac);color:#fff;border:0;padding:13px;font:inherit;font-weight:700;font-size:16px;letter-spacing:2px;border-radius:4px;cursor:pointer}
+button.main:active{transform:scale(.98)}
+.err{color:var(--ac);font-size:14px;min-height:18px;margin-top:10px}
+.by{margin-top:18px;color:var(--mut);font-size:13px;text-align:center}
+.by b{color:var(--tx)}
+.log{width:100%;max-width:380px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--ok);height:150px;overflow:hidden;margin-top:18px;line-height:1.7}
+.bar{width:100%;max-width:380px;height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .25s}
+.pct{margin-top:10px;font-size:14px;color:var(--mut)}
+.top{width:100%;max-width:420px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.st{font-size:13px;color:var(--ok)}
+.st:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px}
+.menu{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.row small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.sw{position:relative;width:46px;height:26px;flex:none;background:#1a2230;border-radius:13px;cursor:pointer;transition:.2s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#8896a8;transition:.2s}
+.sw.on{background:var(--ac)}
+.sw.on:after{left:23px;background:#fff}
+.sl{padding:15px 18px;border-bottom:1px solid var(--line)}
+.sl:last-child{border-bottom:0}
+.sl div{display:flex;justify-content:space-between}
+.sl span{color:var(--ac);font-weight:700}
+input[type=range]{padding:0;margin-top:10px;accent-color:var(--ac);height:20px}
+.inject{width:100%;max-width:420px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:#151c27;border:1px solid var(--line);padding:10px 16px;border-radius:4px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+
+<section class="screen on" id="s-login">
+  <div class="card">
+    <h1>REGLO<b>FF</b><span class="beta">BETA</span></h1>
+    <p class="sub">Masuk untuk membuka menu</p>
+    <label for="u">Username</label>
+    <input id="u" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label for="p">Password</label>
+    <input id="p" type="password" autocomplete="off">
+    <div class="err" id="err"></div>
+    <button class="main" id="go">MASUK</button>
+    <div class="by">By <b>Reglo</b> · v0.9 beta</div>
+  </div>
+</section>
+
+<section class="screen" id="s-load">
+  <h1>REGLO<b>FF</b><span class="beta">BETA</span></h1>
+  <div class="log" id="log"></div>
+  <div class="bar"><i id="fill"></i></div>
+  <div class="pct" id="pct">0%</div>
+</section>
+
+<section class="screen" id="s-menu" style="justify-content:flex-start">
+  <div class="top">
+    <h1 style="font-size:24px;margin:0">REGLO<b>FF</b><span class="beta">BETA</span></h1>
+    <div class="st">Terhubung</div>
+  </div>
+  <div class="menu" id="menu"></div>
+  <button class="main inject" id="inj">AKTIFKAN</button>
+  <div class="by">By <b>Reglo</b> · v0.9 beta · login: <span id="who"></span></div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')};
+const toast=t=>{const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)};
+
+function login(){
+  const u=$('u').value.trim(),p=$('p').value;
+  if(u==='YantoK'&&p==='L2790'){$('err').textContent='';$('who').textContent=u;load()}
+  else $('err').textContent='Username atau password salah.';
+}
+$('go').onclick=login;
+[$('u'),$('p')].forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')login()}));
+
+const steps=['Memeriksa lisensi...','Menghubungkan ke server Reglo...','Membaca versi game...','Memuat modul aim assist...','Memuat modul head lock...','Sinkronisasi konfigurasi...','Menyiapkan menu...','Selesai.'];
+function load(){
+  show('s-load');const log=$('log');log.innerHTML='';let n=0;
+  const t=setInterval(()=>{
+    n++;const pc=Math.round(n/steps.length*100);
+    $('fill').style.width=pc+'%';$('pct').textContent=pc+'%';
+    log.innerHTML+='> '+steps[n-1]+'<br>';
+    if(n>=steps.length){clearInterval(t);setTimeout(()=>show('s-menu'),600)}
+  },520);
+}
+
+const items=[
+ {k:'Head Lock',d:'Bidikan otomatis ke kepala'},
+ {k:'Aim Assist',d:'Bantuan bidik halus'},
+ {k:'Anti Recoil',d:'Kurangi hentakan senjata'},
+ {k:'Auto Headshot',d:'Prioritas target kepala'},
+ {k:'Sensi Boost',d:'Sensitivitas dinamis'},
+ {k:'ESP Line',d:'Garis penanda musuh'}
+];
+const menu=$('menu');
+items.forEach(it=>{
+  const r=document.createElement('div');r.className='row';
+  r.innerHTML='<div>'+it.k+'<small>'+it.d+'</small></div><div class="sw" role="switch" aria-checked="false" tabindex="0"></div>';
+  const sw=r.querySelector('.sw');
+  const tg=()=>{sw.classList.toggle('on');sw.setAttribute('aria-checked',sw.classList.contains('on'));toast(it.k+(sw.classList.contains('on')?' aktif':' nonaktif'))};
+  sw.onclick=tg;sw.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}};
+  menu.appendChild(r);
+});
+[['Head Lock Power',80],['Aim Smooth',45],['FOV',60]].forEach(([n,v])=>{
+  const s=document.createElement('div');s.className='sl';
+  s.innerHTML='<div>'+n+'<span>'+v+'</span></div><input type="range" min="0" max="100" value="'+v+'" aria-label="'+n+'">';
+  const inp=s.querySelector('input'),sp=s.querySelector('span');
+  inp.oninput=()=>sp.textContent=inp.value;
+  menu.appendChild(s);
+});
+$('inj').onclick=()=>{
+  const b=$('inj');b.disabled=true;b.textContent='MENGAKTIFKAN...';
+  setTimeout(()=>{b.textContent='AKTIF';toast('Konfigurasi diterapkan')},1400);
+};
+</script>
+</body>
+</html>
